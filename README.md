@@ -6,6 +6,8 @@ Hint: Base64, Hexdump
 
    Jawab:
 
+   [alt text](https://github.com/zephyrzth/SoalShift_modul1_E13/images/1_1.png)
+
    `#!/bin/bash` adalah untuk menandakan bahwa kita bisa menjalankan file tersebut dengan perintah bash.
    
    Gambar = `ls | grep “[.]jpg$”` adalah untuk memasukkan isi dari folder yang sama dengan bash script ini, dalam hal ini foto foto, ke dalam variabel gambar.
