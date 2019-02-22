@@ -85,7 +85,7 @@ Hint: Base64, Hexdump
    
    Jawab:
    
-   ![alt_text](images/3_1.png)
+   ![alt_text](images/3_1.jpg)
    
    Pertama kita meminta input dari user untuk seberapa banyak user mau merandom password.
    
@@ -154,7 +154,7 @@ Hint: Base64, Hexdump
    
    Jawab:
    
-   ![alt_text](images/5_1.png)
+   ![alt_text](images/5_1.jpg)
    
    Pertama kita melihat isi dari `/var/log/syslog` dengan `cat`.
    
@@ -170,6 +170,6 @@ Hint: Base64, Hexdump
    
    Terakhir menyimpan dalam bentuk file dalam direktori yang sudah ditentukan. Untuk waktu yang ditentukan, kita menggunakan crontab.
    
-   ![alt_text](images/5_2.png)
+   ![alt_text](images/5_2.jpg)
    
    Maka file tersebut akan berjalan sesuai waktu yang ditentukan
