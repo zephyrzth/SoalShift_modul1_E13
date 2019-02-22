@@ -12,7 +12,11 @@ Hint: Base64, Hexdump
    
    Gambar = `ls | grep “[.]jpg$”` adalah untuk memasukkan isi dari folder yang sama dengan bash script ini, dalam hal ini foto foto, ke dalam variabel gambar.
    
-   Selanjutnya kita menggunakan loop for untuk mengencode semua gambar dengan menggunakan base64 lalu filenya kita buat baru dengan tambahan “jadi” didepan nama file. Untuk pengaturan waktunya kita menggunakan crontab
+   Selanjutnya kita menggunakan loop for untuk mengencode semua gambar dengan menggunakan base64 lalu filenya kita buat baru dengan tambahan “jadi” didepan nama file.
+   
+   Untuk pengaturan waktunya kita menggunakan crontab
+   
+   ![alt_text](images/1_2.png)
    
    Saat dijalankan maka foto-foto yang diminta sudah dapat diakses sesuai waktu yang diminta pada soal.
 
@@ -37,6 +41,8 @@ Hint: Base64, Hexdump
      
      Dan hasilnya adalah United States.
      
+     ![alt_text](images/2_a.png)
+     
    - Tentukan tiga product line yang memberikan penjualan(quantity) terbanyak pada soal poin a.
    
      Jawab:
@@ -52,6 +58,8 @@ Hint: Base64, Hexdump
      
      Terakhir dimasukkan ke dalam `head -n3` untuk mengambil 3 data teratas.
      
+     ![alt_text](images/2_b.png)
+     
    - Tentukan tiga product yang memberikan penjualan(quantity) terbanyak berdasarkan tiga product line yang didapatkan pada soal poin b.
    
      Jawab:
@@ -65,7 +73,9 @@ Hint: Base64, Hexdump
      
      Setelah itu, cara masih sama, yaitu `sort` menurut kolom ke 2 secara descending, dan hasil sort dimasukkan lagi ke `awk` untuk diprint productnya saja.
      
-     Dan dimasukkan ke `head -n3` untuk diambil 3 data teratas
+     Dan dimasukkan ke `head -n3` untuk diambil 3 data teratas.
+     
+     ![alt_text](images/2_c.png)
   
 3. Buatlah sebuah script bash yang dapat menghasilkan password secara acak sebanyak 12 karakter yang terdapat huruf besar, huruf kecil, dan angka. Password acak tersebut disimpan pada file berekstensi .txt dengan ketentuan pemberian nama sebagai berikut:
    - Jika tidak ditemukan file password1.txt maka password acak tersebut disimpan pada file bernama password1.txt
@@ -74,6 +84,8 @@ Hint: Base64, Hexdump
    - Password yang dihasilkan tidak boleh sama.
    
    Jawab:
+   
+   ![alt_text](images/3_1.png)
    
    Pertama kita meminta input dari user untuk seberapa banyak user mau merandom password.
    
@@ -142,6 +154,8 @@ Hint: Base64, Hexdump
    
    Jawab:
    
+   ![alt_text](images/5_1.png)
+   
    Pertama kita melihat isi dari `/var/log/syslog` dengan `cat`.
    
    Lalu kita menggunakan perintah `awk` yaitu `tolower` untuk membuat semua karakter di syslog menjadi lowercase
@@ -155,5 +169,7 @@ Hint: Base64, Hexdump
    Dari hasil print tersebut dimasukkan lagi ke dalam perintah `awk` yang bertujuan untuk membatasi number of field sampai 13 saja.
    
    Terakhir menyimpan dalam bentuk file dalam direktori yang sudah ditentukan. Untuk waktu yang ditentukan, kita menggunakan crontab.
+   
+   ![alt_text](images/5_2.png)
    
    Maka file tersebut akan berjalan sesuai waktu yang ditentukan
