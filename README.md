@@ -6,9 +6,7 @@ Hint: Base64, Hexdump
 
    Jawab:
 
-   ![alt text](
-        SoalShift_modul1_E13/images/1_1.png
-      )
+   ![alt_text](images/1_1.png)
 
    `#!/bin/bash` adalah untuk menandakan bahwa kita bisa menjalankan file tersebut dengan perintah bash.
    
