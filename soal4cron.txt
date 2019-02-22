@@ -1,0 +1,1 @@
+0 */1 * * * bash ~/Sistem_Operasi/Modul_1/Soal_Shift/soal4.sh
