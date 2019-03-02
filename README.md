@@ -10,7 +10,7 @@ Hint: Base64, Hexdump
 
    `#!/bin/bash` adalah untuk menandakan bahwa kita bisa menjalankan file tersebut dengan perintah bash.
    
-   Gambar = `ls | grep “[.]jpg$”` adalah untuk memasukkan isi dari folder yang sama dengan bash script ini, dalam hal ini foto foto, ke dalam variabel gambar.
+   `gambar=ls | grep “[.]jpg$”` adalah untuk memasukkan isi dari folder yang sama dengan bash script ini, dalam hal ini foto foto, ke dalam variabel gambar.
    
    Selanjutnya kita menggunakan loop for untuk mengencode semua gambar dengan menggunakan base64 lalu filenya kita buat baru dengan tambahan “jadi” didepan nama file.
    
