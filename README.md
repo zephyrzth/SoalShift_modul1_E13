@@ -91,7 +91,7 @@ Hint: Base64, Hexdump
    
    Lalu perulangan `for` yang dipakai bertujuan untuk melakukan sebanyak user mau.
    
-   Dalam `for` kita menemukan `if`, if disini berguna untuk mengecek apakah file yang dicari ada atau tidak, jika sudah ada maka perulangan akan berlanjut.
+   Dalam `for` kita menemukan `if -f`, if -f disini berguna untuk mengecek apakah file yang dicari ada atau tidak, jika sudah ada maka perulangan akan berlanjut.
    
    Jika tidak ditemukan akan masuk ke `else`, dimana else disini akan merandom dari `A-Z`, `a-z`, dan `0-9` sebanyak 12 karakter dan dipakai untuk nama file password ke i sesuai dengan loop tadi.
    
@@ -133,19 +133,80 @@ Hint: Base64, Hexdump
    cat /var/log/syslog | tr [A-Za-z] [$patternupper$patternlower] > "/var/log/backup/$filename"   
 
    ```
+   Sebenarnya untuk penggantian huruf dalam bash script sudah terdapat perintah sendiri yang bernama `tr [pattern awal] [pattern yang diinginkan]`, dan hal tersebut dipermudah lagi dengan adanya pattern. Sebagai contoh `tr [A-Z] [a-z]` akan mengubah semua huruf yang menjadi input menjadi huruf kecil, jadi jika ingin menggeser huruf tinggal mengganti pattern saja (misal menjadi [b-za-a], [c-zz-b], dll.).
+   
    Dari sini, pertama deklarasikan tipe bash script `#!/bin/bash`.
    
-   Lalu buat judul untuk file berdasarkan aturan dengan mengambil masing-masing atribut pada date ke dalam masing-masing variabel berbeda untuk memudahkan, dan nama digabung dari variabel tersebut dan dibuat ke dalam variabel `filename`.
+   Lalu buat judul untuk file berdasarkan aturan dengan mengambil masing-masing atribut pada date ke dalam masing-masing variabel berbeda untuk memudahkan, dan nama digabung dari variabel tersebut dan dibuat ke dalam variabel `filename`. Cara mengambil masing-masing atribut `date` terdapat sintaksnya di dalam `man date`.
    
    Lalu, karena nantinya semua data di file akan digeser hurufnya menurut jam saat ini, lakukan operasi penambahan dulu pada jam dan disimpan dalam 2 variabel, variabel ke 1 (cipher1lower) untuk batas awal yang nanti digunakan untuk pattern penggantian huruf, dan variabel ke 2 (cipher2lower) adalah batas akhir nanti untuk pattern. Hal ini dilakukan dengan menambah jam ke ASCII code dari huruf A dan a.
    
-   Lalu, hasil tadi di `printf '%03o'` ke dalam variabel untuk masing-masing pattern huruf besar dan huruf kecil.
+   Lalu, hasil tadi di `printf '%03o'` ke dalam variabel untuk mengembalikan hasil **penjumlahan angka** tadi menjadi karakter ASCII yang sesuai. Karena jam maksimal adalah 23, maka tidak perlu takut bahwa ini akan menampilkan karakter selain huruf.
    
    Berikutnya dibuatlah pattern tersebut. (contoh pattern: A-Za-z, B-ZA-Aa-z, dll.) dan disimpan di variabel yang dibedakan untuk huruf besar dan kecil.
    
    Hasil dari pattern tersebut digunakan dalam fungsi `tr` yang didahului dengan `cat` file syslog, `[A-Za-z]` adalah pattern awal untuk huruf alfabet besar dan kecil (inilah yang akan kita ubah urutannya), diganti dengan pattern sebelah kanannya `[$patternupper$patternlower]`.
    
-   Dan hasil tadi dimasukkan ke dalam file dengan judul sesuai `$filename`
+   Dan hasil tadi dimasukkan ke dalam file dengan judul sesuai `$filename`.
+   
+   Untuk crontab yang setiap jam adalah seperti ini.
+   ```
+   0 */1 * * * bash ~/Sistem_Operasi/Modul_1/Soal_Shift/soal4.sh
+   ```
+   Dan untuk file decrypt isinya sebagai berikut.
+   ```
+   #!/bin/bash
+   
+   jam=`date +%H`
+   menit=`date +%M`
+   tanggal=`date +%d`
+   bulan=`date +%m`
+   tahun=`date +%Y`
+   filename="$jam:$menit $tanggal-$bulan-$tahun"
+
+   for i in /var/log/backup/*
+   do
+      judul1=`printf "${i##*/}" | awk '{print $1}'`
+      judul2=`printf "${i##*/}" | awk '{print $2}'`
+      judul=$judul1"_"$judul2
+      sudo mv /var/log/backup/* /var/log/backup/$judul
+      jamjudul=`echo $judul1 | awk -F":" '{print $1}'`
+   done
+
+   cipher1lower=`expr $jamjudul + 97`
+   cipher2lower=`expr $jamjudul + 97 - 1`
+
+   cipher1upper=`expr $jamjudul + 65`
+   cipher2upper=`expr $jamjudul + 65 - 1`
+
+   charcipher1lower="\\$(printf '%03o' $cipher1lower)"
+   charcipher2lower="\\$(printf '%03o' $cipher2lower)"
+
+   charcipher1upper="\\$(printf '%03o' $cipher1upper)"
+   charcipher2upper="\\$(printf '%03o' $cipher2upper)"
+
+   patternlower=$charcipher1lower"-za-"$charcipher2lower
+   patternupper=$charcipher1upper"-ZA-"$charcipher2upper
+
+   for i in /var/log/backup/*
+   do
+      cat $i | tr [$patternupper$patternlower] [A-Za-z] > /var/log/backup/"$filename"   
+      rm /var/log/backup/$judul
+   done
+   ```
+   Untuk mendekrip, metodenya sangat mudah, yaitu tinggal membalik pattern dari `tr`. Jadi semisal untuk mengenkrip menggunakan `tr [A-Za-z] [pattern]` maka akan dirubah menjadi `tr [pattern] [A-Za-z]` untuk mendekrip.
+   
+   Tetapi permasalahan di sini adalah bahwa kita menggunakan jam saat ini sebagai kode enkrip dan jam tersebut disimpan di dalam judul. Sehingga kita perlu mengambil jam dari judul tersebut untuk kemudian dilakukan operasi penambahan pada huruf A dan a untuk mendapatkan pattern lagi. Masalah lainnya adalah pada judul file terdapat karakter spasi yang akan mempersulit karena beberapa perintah termasuk `cat` tidak bisa membuka file yang mengandung karakter spasi.
+   
+   Pertama metode masih sama, didapatkan waktu dan tanggal hari ini untuk mengupdate judul setelah didekrip nanti. Lalu karena kita tidak tahu file mana yang didekrip, maka kita akan mencari dalam tempat backup tadi `/var/log/backup/*`. **Pisahkan file yang dibackup ke dalam folder kosong jika memakai cara ini, dan cara ini hanya bisa dilakukan jika terdapat satu file saja di dalam folder tersebut**.
+   
+   Lalu kita menggunakan `printf "${i##*/}" | awk '{print $1}'` untuk mendapatkan judulnya, printf di awal berfungsi untuk mendapatkan judul file (membuang direktori dari file tersebut) dan memasukkan ke awk untuk mendapat `$1` yaitu jam dan menit. Cara sama dilakukan untuk mendapat `$2` yaitu tanggal, bulan, dan tahun. Hal ini dilakukan untuk mengubah nama file sementara agar tidak menggunakan karakter spasi dengan menggantinya menjadi `:`.
+   
+   Untuk mendapatkan jam dari judul file, digunakan
+   ```
+   jamjudul=`echo $judul1 | awk -F":" '{print $1}'`
+   ```
+   Lalu dilakukan operasi penghitungan jam ditambah desimal dari huruf A dan a, dan membuat patternnya. Setelah pattern berhasil dicari, file dibuka dengan cat, dimasukkan ke `tr [pattern decrypt] [A-Za-z]` dan hasilnya akan diletakkan ke dalam waktu dan tanggal saat ini yang sudah dicari di awal, sedangkan file yang sekarang akan dihapus.
   
 5. Buatlah sebuah script bash untuk menyimpan record dalam syslog yang memenuhi kriteria berikut:
    - Tidak mengandung string “sudo”, tetapi mengandung string “cron”, serta buatlah pencarian stringnya tidak bersifat case sensitive, sehingga huruf kapital atau tidak, tidak menjadi masalah.
@@ -172,4 +233,10 @@ Hint: Base64, Hexdump
    
    ![alt_text](images/5_2.jpg)
    
-   Maka file tersebut akan berjalan sesuai waktu yang ditentukan
+   Maka file tersebut akan berjalan sesuai waktu yang ditentukan.
+   
+# Kendala
+Kendala selama pengerjaan antara lain:
+1. Pada no. 4 crontab tidak bekerja
+2. No. 4, awalnya kesulitan untuk dekrip karena cat tidak bisa digunakan untuk membuka file yang mengandung spasi, sehingga judul harus diganti dulu
+3. Untuk kode dekrip no 4 hanya bisa dilakukan jika file yang ada dalam folder hanya satu
